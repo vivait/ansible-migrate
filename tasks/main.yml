@@ -3,8 +3,16 @@
   shell: "[ -d '{{symfony2_project_root}}/current' ] && readlink -f '{{symfony2_project_root}}/current'"
   ignore_errors: yes
   register: current_path
-  
+
 - debug: msg="{{current_path}}"
+
+- name: Check for a previous release and keep a reference
+  shell: "[ -d '{{symfony2_project_root}}/previous' ] && readlink -f '{{symfony2_project_root}}/previous'"
+  ignore_errors: yes
+  register: previous_path
+  when: symfony2_versioned_deployment|bool
+
+- debug: msg="{{previous_path}}"
 
 - name: Store a reference to the previous version
   file: state=link src="{{current_path.stdout}}" path={{symfony2_project_root}}/previous
@@ -18,17 +26,27 @@
   shell: "{{ migration_command }}"
   when: symfony2_run_migrations|bool and migration_command|default('') != ''
 
+- name: Remove previous release
+  file: state=absent path={{previous_path.stdout}}
+  when: symfony2_versioned_deployment|bool and symfony2_versioned_deployment_release_cleanup|bool and previous_path.stdout != ''
+
 - name: Put version live
   file: state=link src={{ symfony2_release_destination }} path={{symfony2_project_root}}/current
   when: symfony2_versioned_deployment|bool
 
-- service: name=php5.6-fpm state=reloaded
+- service: name={{item}} state=stopped
   sudo: yes
-  when: "'php5.6-fpm' in php_packages"
+  ignore_errors: yes
+  with_items: "{{ symfony2_versioned_deployment_stop_services }}"
 
-- service: name=php7.0-fpm state=reloaded
+- service: name={{item}} state=start
   sudo: yes
-  when: "'php7.0-fpm' in php_packages"
+  ignore_errors: yes
+  with_items: "{{ symfony2_versioned_deployment_start_services }}"
+
+- service: name={{item}} state=reloaded
+  sudo: yes
+  with_items: "{{ symfony2_versioned_deployment_reload_services }}"
 
 - name: Clear the opcache for CLI
   sudo: yes
