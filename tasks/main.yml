@@ -10,6 +10,7 @@
   shell: "[ -d '{{symfony2_project_root}}/previous' ] && readlink -f '{{symfony2_project_root}}/previous'"
   ignore_errors: yes
   register: previous_path
+  when: symfony2_versioned_deployment|bool
 
 - debug: msg="{{previous_path}}"
 
