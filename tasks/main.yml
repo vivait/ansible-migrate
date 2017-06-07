@@ -43,7 +43,7 @@
   ignore_errors: yes
   with_items: "{{ symfony2_versioned_deployment_stop_services }}"
 
-- service: name={{item}} state=start
+- service: name={{item}} state=started
   sudo: yes
   ignore_errors: yes
   with_items: "{{ symfony2_versioned_deployment_start_services }}"
