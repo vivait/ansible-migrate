@@ -14,6 +14,10 @@
 
 - debug: msg="{{ previous_path }}"
 
+- debug: msg="{{ previous_path.stdout }}"
+- debug: msg="{{ symfony2_versioned_deployment }}"
+- debug: msg="{{ symfony2_versioned_deployment_release_cleanup }}"
+
 - name: Store a reference to the previous version
   file: state=link src="{{current_path.stdout}}" path={{symfony2_project_root}}/previous
   when: symfony2_versioned_deployment|bool and current_path.stdout != ''
@@ -25,10 +29,6 @@
 - name: Run migrations
   shell: "{{ migration_command }}"
   when: symfony2_run_migrations|bool and migration_command|default('') != ''
-
-- debug: msg="{{ previous_path.stdout }}"
-- debug: msg="{{ symfony2_versioned_deployment }}"
-- debug: msg="{{ symfony2_versioned_deployment_release_cleanup }}"
 
 - name: Remove previous release
   file: state=absent path={{previous_path.stdout}}
