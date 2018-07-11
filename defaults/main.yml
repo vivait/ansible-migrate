@@ -14,3 +14,17 @@ php_opcache_enable_cli: false
 symfony2_versioned_deployment_stop_services: []
 symfony2_versioned_deployment_start_services: []
 symfony2_versioned_deployment_reload_services: []
+
+##
+# Each of these need user, group and owner, like so:
+# symfony_versioned_deployment_chown_directories:
+#     - path: /the/path/to/chown
+#       group: www-data
+#       owner: ubuntu
+# symfony_versioned_deployment_chown_directories_recursively:
+#     - path: /the/path/to/chown
+#       group: www-data
+#       owner: ubuntu
+##
+symfony_versioned_deployment_chown_directories: []
+symfony_versioned_deployment_chown_directories_recursively: []

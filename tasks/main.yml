@@ -34,6 +34,21 @@
   file: state=absent path={{previous_path.stdout}}
   when: symfony2_versioned_deployment|bool and symfony2_versioned_deployment_release_cleanup|bool and previous_path.stdout != ''
 
+- name: Chown directories
+  file:
+    path: "{{ item.path }}"
+    group: "{{ item.group }}"
+    owner: "{{ item.owner }}"
+  with_items: "{{ symfony_versioned_deployment_chown_directories }}"
+
+- name: Chown directories recursively
+  file:
+    path: "{{ item.path }}"
+    group: "{{ item.group }}"
+    owner: "{{ item.owner }}"
+    recurse: true
+  with_items: "{{ symfony_versioned_deployment_chown_directories_recursively }}"
+
 - name: Put version live
   file: state=link src={{ symfony2_release_destination }} path={{symfony2_project_root}}/current
   when: symfony2_versioned_deployment|bool
