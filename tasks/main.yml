@@ -54,20 +54,20 @@
   when: symfony2_versioned_deployment|bool
 
 - service: name={{item}} state=stopped
-  sudo: yes
+  become: yes
   ignore_errors: yes
   with_items: "{{ symfony2_versioned_deployment_stop_services }}"
 
 - service: name={{item}} state=started
-  sudo: yes
+  become: yes
   ignore_errors: yes
   with_items: "{{ symfony2_versioned_deployment_start_services }}"
 
 - service: name={{item}} state=reloaded
-  sudo: yes
+  become: yes
   with_items: "{{ symfony2_versioned_deployment_reload_services }}"
 
 - name: Clear the opcache for CLI
-  sudo: yes
+  become: yes
   command: "cachetool opcache:reset --cli"
   when: php_opcache_enabled_in_ini|bool and php_opcache_enable_cli|bool
